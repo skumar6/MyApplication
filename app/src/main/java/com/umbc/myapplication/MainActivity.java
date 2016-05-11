@@ -13,13 +13,15 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button play,stop,record,exit;
+    Button play,stop,record;
+    EditText recName;
     private MediaRecorder myAudioRecorder;
     private String outputFile = null;
     String Filename = "Sanjeev";
@@ -32,30 +34,35 @@ public class MainActivity extends AppCompatActivity {
         play=(Button)findViewById(R.id.bt_play);
         stop=(Button)findViewById(R.id.bt_stop);
         record=(Button)findViewById(R.id.bt_record);
-        //exit = (Button) findViewById(R.id.bt_exit);
-      //  Filename  = PreferenceManager.getDefaultSharedPreferences(this).getString("filename","");
-
-        stop.setEnabled(false);
-        play.setEnabled(false);
-        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+Filename+".mp3";;
-
-        myAudioRecorder=new MediaRecorder();
-        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFile(outputFile);
+        recName = (EditText) findViewById(R.id.editText);
+        play.setVisibility(View.INVISIBLE);
+        stop.setVisibility(View.INVISIBLE);
 
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    myAudioRecorder = new MediaRecorder();
-                    myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                    myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                    myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-                    myAudioRecorder.setOutputFile(outputFile);
-                    myAudioRecorder.prepare();
-                    myAudioRecorder.start();
+                    Toast.makeText(getApplicationContext(), ""+String.valueOf(recName.getText()),Toast.LENGTH_LONG).show();
+                    if(!String.valueOf(recName.getText()).equals("")  ){
+                        Filename = String.valueOf(recName.getText());
+                        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+Filename+".mp3";;
+                        myAudioRecorder=new MediaRecorder();
+                        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                        myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                        myAudioRecorder.setOutputFile(outputFile);
+                       // ok.setVisibility(View.INVISIBLE);
+                        play.setVisibility(View.VISIBLE);
+                        stop.setVisibility(View.VISIBLE);
+                        myAudioRecorder.prepare();
+                        myAudioRecorder.start();
+                        Toast.makeText(getApplicationContext(), "Recording started", Toast.LENGTH_LONG).show();
+                       // record.setVisibility(View.VISIBLE);
+                        recName.setVisibility(View.INVISIBLE);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Enter name for Recording",Toast.LENGTH_LONG).show();
+                    }
+
                 } catch (IllegalStateException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 record.setEnabled(false);
                 stop.setEnabled(true);
 
-                Toast.makeText(getApplicationContext(), "Recording started", Toast.LENGTH_LONG).show();
+               // Toast.makeText(getApplicationContext(), "Recording started", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -81,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 stop.setEnabled(false);
                 play.setEnabled(true);
                 record.setEnabled(true);
+                recName.setVisibility(View.VISIBLE);
 
                 Toast.makeText(getApplicationContext(), "Audio recorded successfully",Toast.LENGTH_LONG).show();
             }
